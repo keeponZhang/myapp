@@ -1,0 +1,2 @@
+include ':app', ':RecyclerViewHelper', ':downloaderLib', ':playerview', ':tinkerLib'
+include        ':greendao-api', ':greenDaoCore'

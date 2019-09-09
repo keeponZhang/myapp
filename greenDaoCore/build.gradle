@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+//    lintOptions {
+//        abortOnError false
+//    }
+}
+
+dependencies {
+    compile project(':greendao-api')
+    compile "com.android.support:support-annotations:${rootProject.ext.support}"
+    compile "com.android.support:appcompat-v7:${rootProject.ext.support}"
+    compile 'io.reactivex:rxjava:1.1.9'
+
+    compile files('libs/sqlcipher.jar')
+}
+
+
