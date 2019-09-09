@@ -15,19 +15,19 @@
  */
 package org.greenrobot.greendao.internal;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.DaoException;
-import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.Property;
+import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScope;
 import org.greenrobot.greendao.identityscope.IdentityScopeLong;
 import org.greenrobot.greendao.identityscope.IdentityScopeObject;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Internal class used by greenDAO. DaoConfig stores essential data for DAOs, and is hold by AbstractDaoMaster. This
@@ -160,6 +160,7 @@ public final class DaoConfig implements Cloneable {
     }
 
     @SuppressWarnings("rawtypes")
+    //可见它是由IdentityScope接口来实现的，它有两个实现类：IdentityScopeLong类和IdentityScopeObject类，下面看看IdentityScopeObject类
     public void initIdentityScope(IdentityScopeType type) {
         if (type == IdentityScopeType.None) {
             identityScope = null;

@@ -16,6 +16,16 @@ import java.util.Map;
  * @see org.greenrobot.greendao.AbstractDaoSession
  */
 //关于DaoSession实例，GreenDAO官方建议不要重新创建新的实例，保持一个单例的引用即可
+//DaoSession对象是通过master.newSession();创建的。DaoSession对象是连接GreenDao框架到SQLite数据库的纽带，
+// 通过该对象我们可以得到一个与数据库某个表相关的操作对象xxxDao
+
+//DaoSession源码表面上的功能，这些功能就是它管理了指定模式下所有可用的DAO对象，并且提供了getter方法供我们得到这些DAO对象，
+// 它还提供了一些CRUD方法
+//实际上DaoSession和StudentDao在调用CRUD的方法进行CRUD操作时，其中的查询操作就是最特别的，
+// 为什么呢？原因是GreenDao在查询这块加了缓存，有趣吧，GreenDao在查询时使用了弱引用WeakReference，
+// 假如第一次查询时候我查询了小明这个Student的数据，那么它将把小明加入一个SparseArray<WeakReference<Q>>的集合中，
+// 下次如果再次查询小明这个学生的时候，将立即会返回这个引用从而不必再查询数据库（前提是GC还没回收这些引用）。
+//这个缓存的代码是在AbstractQueryData类中，如下
 public class DaoSession extends AbstractDaoSession {
 
     private final DaoConfig beautyPhotoInfoDaoConfig;
@@ -27,11 +37,13 @@ public class DaoSession extends AbstractDaoSession {
     private final DanmakuInfoDao danmakuInfoDao;
     private final NewsTypeInfoDao newsTypeInfoDao;
     private final VideoInfoDao videoInfoDao;
-
+//    而创建一个XXDao对象正是在DaoSession的构造方法中
     public DaoSession(Database db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
             daoConfigMap) {
         super(db);
-
+        //缓存操作
+//        上面在讲到DaoConfig类的作用的时候，有说到它有获取该表对应的缓存处理实例的作用，
+//        那么，它是如何缓存的过程，在DaoSession的构造方法中就有为每个Dao初始化缓存的操作了：
         beautyPhotoInfoDaoConfig = daoConfigMap.get(BeautyPhotoInfoDao.class).clone();
         beautyPhotoInfoDaoConfig.initIdentityScope(type);
 
@@ -43,7 +55,11 @@ public class DaoSession extends AbstractDaoSession {
 
         videoInfoDaoConfig = daoConfigMap.get(VideoInfoDao.class).clone();
         videoInfoDaoConfig.initIdentityScope(type);
-
+//        这个正是从在DaoMaster创建的Map集合中取出key为BeautyPhotoInfoDao.class的DaoConfig对象，
+//        刚刚就说了Map集合中保寸了BeautyPhotoInfoDao类对应的数据库db的关系映射，而这个DaoConfig对象正是管理了对应的db对象。
+//        然后把这个DaoConfig传给BeautyPhotoInfoDao(BeautyPhotoInfoDaoConfig, this)，
+//        所以这就说明了我们使用BeautyPhotoInfoDao对象来进行数据库上的CRUD操作而对应的数据库也会变化的原因，
+//        这个过程实际上就是在间接操作数据库
         beautyPhotoInfoDao = new BeautyPhotoInfoDao(beautyPhotoInfoDaoConfig, this);
         danmakuInfoDao = new DanmakuInfoDao(danmakuInfoDaoConfig, this);
         newsTypeInfoDao = new NewsTypeInfoDao(newsTypeInfoDaoConfig, this);
@@ -61,7 +77,7 @@ public class DaoSession extends AbstractDaoSession {
         newsTypeInfoDaoConfig.clearIdentityScope();
         videoInfoDaoConfig.clearIdentityScope();
     }
-
+//    其中最主要的一个方法就是通过getXXDao()来得到XXDao实例
     public BeautyPhotoInfoDao getBeautyPhotoInfoDao() {
         return beautyPhotoInfoDao;
     }

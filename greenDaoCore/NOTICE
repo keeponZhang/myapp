@@ -2,3 +2,52 @@ greenrobot greenDAO (c) Copyright 2011-2016 by Markus Junginger / greenrobot.org
 All rights reserved
 
 This product includes software developed at greenrobot.org
+
+我们来看看使用GreenDAO的基本步骤：
+//生成数据库文件，名为students-db
+DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "students-db", null);
+SQLiteDatabase db = helper.getWritableDatabase();
+//建立特定模式下的所有的DAO对象和数据库db对象的映射
+DaoMaster master = new DaoMaster(db);
+//管理特定模式下的所有DAO对象，并提供一些通用的CRUD持久化方法
+DaoSession session = master.newSession();
+//得到指定的StudentDao对象
+StudentDao dao = session.getStudentDao();
+dao.insert(student);
+//...
+
+GreenDao的逻辑：
+
+实例化一个SQLiteOpenHelper对象，以便建立与指定数据库(如”testDb”)之间的连接；
+调用SQLiteOpenHelper的getWritableDatabase()方法以读写方式打开所连接的数据库；
+通过获得的数据库对象SQLiteDatabase来创建GreenDao框架管理者DaoMaster对象；
+调用DaoMaster的newSession()方法实例化一个数据库会话对象DaoSession；
+通过DaoSession对象获得最终能够操作数据库表的xxxxDao对象”
+
+
+GreenDao优势
+模板代码生成
+GreenDao官方为什么说自己的数据库框架运行快呢，首先，第一点这个框架不像其他框架通过运行期反射创建ORM映射，而是通过freemarker模板方式在编译期之前帮你生成可用的和数据库生成有关的表帮助对象，所以说这第一点就比其他数据库框架的速度快。
+
+模板就是把共性(固定不变的)的东西提取出来反复使用，节约时间 提高开发效率。现在主流的模板技术包括：FreeMarker和Velocity，模板技术推崇一种模式：输出=模板+数据。
+FreeMarker最开始被MVC Web框架用来生成HTML页面，但它的用途不仅限于HTML或者Web领域，比如本文所要介绍的生成JavaBean源代码。
+
+与其他框架的比较
+
+ormlite
+基于注解和反射的的方式,导致ormlite性能有着一定的损失(注解其实也是利用了反射的原理)
+优点：
+文档较全面，社区活跃，有好的维护，使用简单，易上手。
+缺点：
+基于反射，效率较低
+
+GreenDao
+优点：
+效率很高，插入和更新的速度是ormlite的2倍，加载实体的速度是ormlite的4.5倍。
+文件较小（<100K），占用更少的内存 ，但是需要create Dao，
+操作实体灵活：支持get，update，delete等操作
+
+缺点：
+学习成本较高。其中使用了一个java工程根据一些属性和规则去generate一些基础代码，类似于javaBean但会有一些规则，
+另外还有QueryBuilder、Dao等API，所以首先要明白整个过程，才能方便使用。没有ORMLite那样封装的完整，
+不过greenDao的官网上也提到了这一点，正是基于generator而不是反射，才使得其效率高的多。

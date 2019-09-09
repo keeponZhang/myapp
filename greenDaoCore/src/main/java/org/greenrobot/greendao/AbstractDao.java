@@ -59,6 +59,7 @@ import rx.schedulers.Schedulers;
  * 
  * 3.) identityScope
  */
+//AbstractDao源码中主要是一些CRUD方法和其它的一些方法,源码太长了
 public abstract class AbstractDao<T, K> {
     protected final DaoConfig config;
     protected final Database db;
@@ -136,6 +137,7 @@ public abstract class AbstractDao<T, K> {
         if (key == null) {
             return null;
         }
+        //如果有缓存，直接从缓存中取值
         if (identityScope != null) {
             T entity = identityScope.get(key);
             if (entity != null) {
@@ -340,6 +342,7 @@ public abstract class AbstractDao<T, K> {
         return executeInsert(entity, statements.getInsertOrReplaceStatement(), true);
     }
 
+
     private long executeInsert(T entity, DatabaseStatement stmt, boolean setKeyAndAttach) {
         long rowId;
         if (db.isDbLockedByCurrentThread()) {
@@ -354,12 +357,13 @@ public abstract class AbstractDao<T, K> {
                 db.endTransaction();
             }
         }
+        //给操作的bean更新字段_id的值：
         if (setKeyAndAttach) {
             updateKeyAfterInsertAndAttach(entity, rowId, true);
         }
         return rowId;
     }
-
+    //executeInsert 在执行插入操作时，会进行缓存，我们从AbstractDao类中代码可知：
     private long insertInsideTx(T entity, DatabaseStatement stmt) {
         synchronized (stmt) {
             if (isStandardSQLite) {
@@ -376,6 +380,7 @@ public abstract class AbstractDao<T, K> {
     protected void updateKeyAfterInsertAndAttach(T entity, long rowId, boolean lock) {
         if (rowId != -1) {
             K key = updateKeyAfterInsert(entity, rowId);
+//            缓存操作：IdentityScope键值对，key为表中主键，value为bean
             attachEntity(key, entity, lock);
         } else {
             // TODO When does this actually happen? Should we throw instead?
@@ -833,6 +838,7 @@ public abstract class AbstractDao<T, K> {
      */
     protected final void attachEntity(K key, T entity, boolean lock) {
         attachEntity(entity);
+        //可能会问，identityScope从哪来的，构造函数通过DaoConfig：
         if (identityScope != null && key != null) {
             if (lock) {
                 identityScope.put(key, entity);

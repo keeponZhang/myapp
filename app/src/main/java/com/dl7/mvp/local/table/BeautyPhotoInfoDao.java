@@ -13,6 +13,8 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "BEAUTY_PHOTO_INFO".
 */
+//由生成器生成的数据库操作类，它继承于AbstractDao，封装了所有对数据库表进行增删改成的方法。可以这么说，
+// 我们之所以使用GreenDao管理本地数据库无需与SQL语句打交道，就是因为GreenDao框架在这一层已经对大部分数据库操作SQL语句进行了封装。
 public class BeautyPhotoInfoDao extends AbstractDao<BeautyPhotoInfo, String> {
 
     public static final String TABLENAME = "BEAUTY_PHOTO_INFO";
@@ -21,6 +23,8 @@ public class BeautyPhotoInfoDao extends AbstractDao<BeautyPhotoInfo, String> {
      * Properties of entity BeautyPhotoInfo.<br/>
      * Can be used for QueryBuilder and for referencing column names.
      */
+//还有比较重要的就是这个静态内部类Properties，该类中分别对每一个实体类的属性都创建了一个Property对象，
+// 而我们可以根据Property来得到这个属性对应表中的列名、是否为主键等值，其中还包括了一些方法，比如判断表中某个字段的值是否和value相等：eq(Object value);
     public static class Properties {
         public final static Property Imgsrc = new Property(0, String.class, "imgsrc", true, "IMGSRC");
         public final static Property Pixel = new Property(1, String.class, "pixel", false, "PIXEL");
@@ -58,7 +62,7 @@ public class BeautyPhotoInfoDao extends AbstractDao<BeautyPhotoInfo, String> {
         String sql = "DROP TABLE " + (ifExists ? "IF EXISTS " : "") + "\"BEAUTY_PHOTO_INFO\"";
         db.execSQL(sql);
     }
-
+//    其中bindValues()这个方法就是绑定实体的属性名和表中的字段名的
     @Override
     protected final void bindValues(DatabaseStatement stmt, BeautyPhotoInfo entity) {
         stmt.clearBindings();

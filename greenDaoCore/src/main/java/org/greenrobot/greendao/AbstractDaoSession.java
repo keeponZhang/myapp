@@ -15,18 +15,18 @@
  */
 package org.greenrobot.greendao;
 
+import org.greenrobot.greendao.annotation.apihint.Experimental;
+import org.greenrobot.greendao.async.AsyncSession;
+import org.greenrobot.greendao.database.Database;
+import org.greenrobot.greendao.query.QueryBuilder;
+import org.greenrobot.greendao.rx.RxTransaction;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import org.greenrobot.greendao.annotation.apihint.Experimental;
-import org.greenrobot.greendao.async.AsyncSession;
-import org.greenrobot.greendao.database.Database;
-import org.greenrobot.greendao.query.QueryBuilder;
-import org.greenrobot.greendao.rx.RxTransaction;
 
 import rx.schedulers.Schedulers;
 
@@ -49,6 +49,8 @@ import rx.schedulers.Schedulers;
  * @author Markus
  * 
  */
+//可以看到它的父类中，大部分方法都是进行CRUD操作的,而事实上我们在进行CRUD操作都是通过StudentDao对象来进行的，
+// 实际上这两种做法没有区别，因为它内部本身就是通过dao对象来进行CRUD操作的，大家看看这些方法的返回值就知道了
 public class AbstractDaoSession {
     private final Database db;
     private final Map<Class<?>, AbstractDao<?, ?>> entityToDao;
